@@ -7,12 +7,10 @@ import 'package:badges/badges.dart' as badges;
 import 'package:timer_count_down/timer_count_down.dart';
 
 class HomePage extends StatelessWidget {
-  HomePage({super.key});
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    double h = MediaQuery.of(context).size.height;
-    double w = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
@@ -24,8 +22,8 @@ class HomePage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 GradientAnimationText(
-                  duration: Duration(seconds: 2),
-                  text: Text(
+                  duration: const Duration(seconds: 2),
+                  text: const Text(
                     "FutureReply",
                     style:
                         TextStyle(fontSize: 80.0, fontWeight: FontWeight.bold),
@@ -37,8 +35,8 @@ class HomePage extends StatelessWidget {
                   ],
                 ),
                 GradientAnimationText(
-                  duration: Duration(seconds: 3),
-                  text: Text(
+                  duration: const Duration(seconds: 3),
+                  text: const Text(
                     "Extreme Fast Reply",
                     style:
                         TextStyle(fontSize: 30.0, fontWeight: FontWeight.w100),
@@ -49,7 +47,7 @@ class HomePage extends StatelessWidget {
                     //Colors.teal,
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 50,
                 ),
                 Row(
@@ -73,7 +71,7 @@ class HomePage extends StatelessWidget {
                                   ),
                                   // curve: Curves.ease,
                                   transition: Transition.circularReveal,
-                                  duration: Duration(seconds: 2));
+                                  duration: const Duration(seconds: 2));
                               /*    Get.toNamed('/queryPage',
                                   arguments: {'heroTag': heroTag}); */
                             },
@@ -85,12 +83,10 @@ class HomePage extends StatelessWidget {
                                   build: (BuildContext context, double time) =>
                                       Text(
                                     (time * 10).toString(),
-                                    style: TextStyle(color: Colors.white),
+                                    style: const TextStyle(color: Colors.white),
                                   ),
-                                  interval: Duration(milliseconds: 100),
-                                  onFinished: () {
-                                    print('Timer is done!');
-                                  },
+                                  interval: const Duration(milliseconds: 100),
+                                  onFinished: () {},
                                 ),
                                 child: Container(
                                   height: 100,
@@ -102,14 +98,14 @@ class HomePage extends StatelessWidget {
                               ),
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 30,
                           )
                         ],
                       ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 30,
                 ),
                 Row(
@@ -132,7 +128,7 @@ class HomePage extends StatelessWidget {
                                     heroTag: heroTag,
                                   ),
                                   transition: Transition.circularReveal,
-                                  duration: Duration(seconds: 2));
+                                  duration: const Duration(seconds: 2));
                             },
                             child: Hero(
                               tag: heroTag,
@@ -142,12 +138,10 @@ class HomePage extends StatelessWidget {
                                   build: (BuildContext context, double time) =>
                                       Text(
                                     (time * 10).toString(),
-                                    style: TextStyle(color: Colors.white),
+                                    style: const TextStyle(color: Colors.white),
                                   ),
-                                  interval: Duration(milliseconds: 100),
-                                  onFinished: () {
-                                    print('Timer is done!');
-                                  },
+                                  interval: const Duration(milliseconds: 100),
+                                  onFinished: () {},
                                 ),
                                 child: Container(
                                   height: 100,
@@ -159,7 +153,7 @@ class HomePage extends StatelessWidget {
                               ),
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 30,
                           )
                         ],

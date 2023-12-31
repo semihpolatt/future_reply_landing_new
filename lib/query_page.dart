@@ -40,14 +40,12 @@ class QueryPage extends StatelessWidget {
                         seconds: 40,
                         build: (BuildContext context, double time) => Text(
                           (time * 10).toString(),
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                         ),
-                        interval: Duration(
+                        interval: const Duration(
                           milliseconds: 100,
                         ),
-                        onFinished: () {
-                          print('Timer is done!');
-                        },
+                        onFinished: () {},
                       ),
                       child: Container(
                         height: 100,
@@ -75,7 +73,7 @@ class QueryPage extends StatelessWidget {
                         characterController.query.value = value;
                       },
                       maxLines: null,
-                      style: TextStyle(
+                      style: const TextStyle(
                         /*   fontSize: 20,
                         fontWeight: FontWeight.normal, */
                         color: Colors.white,
@@ -88,13 +86,13 @@ class QueryPage extends StatelessWidget {
                           onPressed: () {
                             characterController.query1();
                           },
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.send,
                             color: Colors.white,
                           ),
                         ),
                         labelText: 'Paste Here',
-                        labelStyle: TextStyle(
+                        labelStyle: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.normal,
                           color: Colors.blueGrey,
@@ -113,7 +111,7 @@ class QueryPage extends StatelessWidget {
                     characterController.isPromptOpen.value =
                         !characterController.isPromptOpen.value;
                   },
-                  child: Text(
+                  child: const Text(
                     'Prompts(Optinial)',
                     textAlign: TextAlign.right,
                     style: TextStyle(color: Colors.grey),
@@ -122,7 +120,7 @@ class QueryPage extends StatelessWidget {
 
                 Obx(() {
                   if (characterController.isPromptOpen.value == true) {
-                    return Container(
+                    return SizedBox(
                       width: 400,
                       child: Column(
                         children: [
@@ -136,7 +134,7 @@ class QueryPage extends StatelessWidget {
                                 // characterController.query.value = value;
                               },
                               maxLines: null,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 /*   fontSize: 20,
                                                 fontWeight: FontWeight.normal, */
                                 color: Colors.white,
@@ -167,20 +165,21 @@ class QueryPage extends StatelessWidget {
                   height: h * .02,
                 ),
                 // if (characterController.answer.value != '')
-                Container(
+                SizedBox(
                   width: 400,
                   child: Obx(() {
                     if (characterController.query.value != '') {
                       return Bubble(
-                        radius: Radius.circular(10),
-                        margin: BubbleEdges.only(top: 10, left: 10, right: 100),
-                        padding: BubbleEdges.all(10),
+                        radius: const Radius.circular(10),
+                        margin: const BubbleEdges.only(
+                            top: 10, left: 10, right: 100),
+                        padding: const BubbleEdges.all(10),
                         nip: BubbleNip.leftBottom,
-                        color: Color(0xffE9E9EB),
+                        color: const Color(0xffE9E9EB),
                         child: Text(
                           characterController.query.value,
                           textAlign: TextAlign.left,
-                          style: TextStyle(color: Colors.black),
+                          style: const TextStyle(color: Colors.black),
                         ),
                       );
                     } else {
@@ -188,22 +187,23 @@ class QueryPage extends StatelessWidget {
                     }
                   }),
                 ),
-                Container(
+                SizedBox(
                   width: 400,
                   child: Obx(() {
                     if (characterController.answer.value != '') {
                       return Bubble(
-                        radius: Radius.circular(10),
-                        margin: BubbleEdges.only(top: 10, left: 100, right: 10),
-                        padding: BubbleEdges.all(10),
+                        radius: const Radius.circular(10),
+                        margin: const BubbleEdges.only(
+                            top: 10, left: 100, right: 10),
+                        padding: const BubbleEdges.all(10),
                         nip: BubbleNip.rightBottom,
-                        color: Color(0xff007AFE),
+                        color: const Color(0xff007AFE),
                         child: Column(
                           children: [
                             Text(
                               characterController.answer.value,
                               textAlign: TextAlign.right,
-                              style: TextStyle(color: Colors.white),
+                              style: const TextStyle(color: Colors.white),
                             ),
                           ],
                         ),
@@ -237,8 +237,7 @@ class CharacterController extends GetxController {
 
     gemini
         .streamGenerateContent(
-            "Write a reply tweet, (sentence count is tweet's sentence count) to this tweet: " +
-                query.value)
+            "Write a reply tweet, (sentence count is tweet's sentence count) to this tweet: ${query.value}")
         .listen((value) {
       // print(value.output);
       for (Parts i in value.content!.parts!) {
