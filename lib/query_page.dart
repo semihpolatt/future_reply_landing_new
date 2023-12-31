@@ -6,12 +6,11 @@ import 'package:glassmorphism_widgets/glassmorphism_widgets.dart';
 
 class QueryPage extends StatelessWidget {
   final String? heroTag;
-  QueryPage({super.key, this.heroTag = ''});
+  const QueryPage({super.key, this.heroTag = ''});
 
-  final CharacterController characterController =
-      Get.put(CharacterController());
   @override
   Widget build(BuildContext context) {
+    final characterController = Get.put(CharacterController());
     double h = MediaQuery.of(context).size.height;
     double w = MediaQuery.of(context).size.width;
 
