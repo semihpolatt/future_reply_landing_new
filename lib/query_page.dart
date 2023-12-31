@@ -11,132 +11,178 @@ class QueryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final characterController = Get.put(CharacterController());
-    double h = MediaQuery.of(context).size.height;
-    double w = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      body: Container(
-        height: h,
-        width: w,
-        color: Colors.black,
-        child: SingleChildScrollView(
-          child: SelectionArea(
-            child: Column(
-              children: [
-                SizedBox(
-                  height: h * .1,
-                ),
-                InkWell(
-                  onTap: () {
-                    Get.back();
-                  },
-                  child: Hero(
-                    tag: heroTag!,
-                    child: Container(
-                      height: 100,
-                      width: 100,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage(heroTag!),
-                        ),
+      backgroundColor: Colors.black,
+      body: SingleChildScrollView(
+        child: SelectionArea(
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 100,
+              ),
+              InkWell(
+                onTap: () {
+                  Get.back();
+                },
+                child: Hero(
+                  tag: heroTag!,
+                  child: Container(
+                    height: 100,
+                    width: 100,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(heroTag!),
                       ),
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: h * .02,
-                ),
-                GlassContainer(
-                  height: h * .2,
-                  width: 400,
-                  border: 0,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: TextField(
-                      onChanged: (value) {
-                        characterController.query.value = value;
-                      },
-                      maxLines: null,
-                      style: const TextStyle(
-                        /*   fontSize: 20,
-                        fontWeight: FontWeight.normal, */
-                        color: Colors.white,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              GlassContainer(
+                height: 150,
+                width: 400,
+                border: 0,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: TextField(
+                    onChanged: (value) {
+                      characterController.query.value = value;
+                    },
+                    maxLines: null,
+                    style: const TextStyle(
+                      /*   fontSize: 20,
+                      fontWeight: FontWeight.normal, */
+                      color: Colors.white,
+                      letterSpacing: 0,
+                    ),
+                    decoration: InputDecoration(
+                      //  contentPadding: EdgeInsets.only(right: 30.0),
+
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          characterController.query1();
+                        },
+                        icon: const Icon(
+                          Icons.send,
+                          color: Colors.white,
+                        ),
+                      ),
+                      labelText: 'Paste Here',
+                      labelStyle: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.normal,
+                        color: Colors.blueGrey,
                         letterSpacing: 0,
                       ),
-                      decoration: InputDecoration(
-                        //  contentPadding: EdgeInsets.only(right: 30.0),
-
-                        suffixIcon: IconButton(
-                          onPressed: () {
-                            characterController.query1();
-                          },
-                          icon: const Icon(
-                            Icons.send,
-                            color: Colors.white,
-                          ),
-                        ),
-                        labelText: 'Paste Here',
-                        labelStyle: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.normal,
-                          color: Colors.blueGrey,
-                          letterSpacing: 0,
-                        ),
-                        border: InputBorder.none,
-                      ),
+                      border: InputBorder.none,
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: h * .01,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              InkWell(
+                onTap: () {
+                  characterController.isPromptOpen.value =
+                      !characterController.isPromptOpen.value;
+                },
+                child: const Text(
+                  'Prompts(Optinial)',
+                  textAlign: TextAlign.right,
+                  style: TextStyle(color: Colors.grey),
                 ),
-                InkWell(
-                  onTap: () {
-                    characterController.isPromptOpen.value =
-                        !characterController.isPromptOpen.value;
-                  },
-                  child: const Text(
-                    'Prompts(Optinial)',
-                    textAlign: TextAlign.right,
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                ),
+              ),
 
-                Obx(() {
-                  if (characterController.isPromptOpen.value == true) {
-                    return SizedBox(
-                      width: 400,
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            height: h * .02,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
-                            child: TextField(
-                              onChanged: (value) {
-                                // characterController.query.value = value;
-                              },
-                              maxLines: null,
-                              style: const TextStyle(
-                                /*   fontSize: 20,
-                                                fontWeight: FontWeight.normal, */
-                                color: Colors.white,
+              Obx(() {
+                if (characterController.isPromptOpen.value == true) {
+                  return SizedBox(
+                    width: 400,
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: TextField(
+                            onChanged: (value) {
+                              // characterController.query.value = value;
+                            },
+                            maxLines: null,
+                            style: const TextStyle(
+                              /*   fontSize: 20,
+                                              fontWeight: FontWeight.normal, */
+                              color: Colors.white,
+                              letterSpacing: 0,
+                            ),
+                            decoration: InputDecoration(
+                              //  contentPadding: EdgeInsets.only(right: 30.0),
+
+                              labelText: 'Write Your Prompts Here',
+                              labelStyle: TextStyle(
+                                // fontSize: 20,
+                                fontWeight: FontWeight.normal,
+                                color: Colors.grey[50],
                                 letterSpacing: 0,
                               ),
-                              decoration: InputDecoration(
-                                //  contentPadding: EdgeInsets.only(right: 30.0),
-
-                                labelText: 'Write Your Prompts Here',
-                                labelStyle: TextStyle(
-                                  // fontSize: 20,
-                                  fontWeight: FontWeight.normal,
-                                  color: Colors.grey[50],
-                                  letterSpacing: 0,
-                                ),
-                                border: InputBorder.none,
-                              ),
+                              border: InputBorder.none,
                             ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  return Container();
+                }
+              }),
+              const SizedBox(
+                height: 10,
+              ),
+              // if (characterController.answer.value != '')
+              SizedBox(
+                width: 400,
+                child: Obx(() {
+                  if (characterController.query.value != '') {
+                    return Bubble(
+                      radius: const Radius.circular(10),
+                      margin:
+                          const BubbleEdges.only(top: 10, left: 10, right: 100),
+                      padding: const BubbleEdges.all(10),
+                      nip: BubbleNip.leftBottom,
+                      color: const Color(0xffE9E9EB),
+                      child: Text(
+                        characterController.query.value,
+                        textAlign: TextAlign.left,
+                        style: const TextStyle(color: Colors.black),
+                      ),
+                    );
+                  } else {
+                    return Container();
+                  }
+                }),
+              ),
+              SizedBox(
+                width: 400,
+                child: Obx(() {
+                  if (characterController.answer.value != '') {
+                    return Bubble(
+                      radius: const Radius.circular(10),
+                      margin:
+                          const BubbleEdges.only(top: 10, left: 100, right: 10),
+                      padding: const BubbleEdges.all(10),
+                      nip: BubbleNip.rightBottom,
+                      color: const Color(0xff007AFE),
+                      child: Column(
+                        children: [
+                          Text(
+                            characterController.answer.value,
+                            textAlign: TextAlign.right,
+                            style: const TextStyle(color: Colors.white),
                           ),
                         ],
                       ),
@@ -145,63 +191,11 @@ class QueryPage extends StatelessWidget {
                     return Container();
                   }
                 }),
-                SizedBox(
-                  height: h * .02,
-                ),
-                // if (characterController.answer.value != '')
-                SizedBox(
-                  width: 400,
-                  child: Obx(() {
-                    if (characterController.query.value != '') {
-                      return Bubble(
-                        radius: const Radius.circular(10),
-                        margin: const BubbleEdges.only(
-                            top: 10, left: 10, right: 100),
-                        padding: const BubbleEdges.all(10),
-                        nip: BubbleNip.leftBottom,
-                        color: const Color(0xffE9E9EB),
-                        child: Text(
-                          characterController.query.value,
-                          textAlign: TextAlign.left,
-                          style: const TextStyle(color: Colors.black),
-                        ),
-                      );
-                    } else {
-                      return Container();
-                    }
-                  }),
-                ),
-                SizedBox(
-                  width: 400,
-                  child: Obx(() {
-                    if (characterController.answer.value != '') {
-                      return Bubble(
-                        radius: const Radius.circular(10),
-                        margin: const BubbleEdges.only(
-                            top: 10, left: 100, right: 10),
-                        padding: const BubbleEdges.all(10),
-                        nip: BubbleNip.rightBottom,
-                        color: const Color(0xff007AFE),
-                        child: Column(
-                          children: [
-                            Text(
-                              characterController.answer.value,
-                              textAlign: TextAlign.right,
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                          ],
-                        ),
-                      );
-                    } else {
-                      return Container();
-                    }
-                  }),
-                ),
-                SizedBox(
-                  height: h * .1,
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(
+                height: 100,
+              ),
+            ],
           ),
         ),
       ),
