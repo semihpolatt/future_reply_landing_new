@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gradient_animation_text/flutter_gradient_animation_text.dart';
 import 'package:future_reply_landing_new/query_page.dart';
+import 'package:get/get.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    Get.put(CharacterController());
     return Scaffold(
       backgroundColor: Colors.black,
       body: Column(

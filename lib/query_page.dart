@@ -6,12 +6,14 @@ import 'package:glassmorphism_widgets/glassmorphism_widgets.dart';
 
 class QueryPage extends StatelessWidget {
   final String? heroTag;
+
   const QueryPage({super.key, this.heroTag = ''});
 
   @override
   Widget build(BuildContext context) {
+    final characterController = Get.put(CharacterController());
     // CharacterController characterController = Get.put(CharacterController());
-    CharacterController characterController = Get.find<CharacterController>();
+    //CharacterController characterController = Get.find<CharacterController>();
     return Scaffold(
       backgroundColor: Colors.black,
       body: SingleChildScrollView(
@@ -23,7 +25,7 @@ class QueryPage extends StatelessWidget {
               ),
               InkWell(
                 onTap: () {
-                  Get.back();
+                  Navigator.pop(context);
                 },
                 child: Hero(
                   tag: heroTag!,

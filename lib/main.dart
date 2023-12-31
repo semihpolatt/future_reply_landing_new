@@ -5,7 +5,6 @@ import 'package:future_reply_landing_new/query_page.dart';
 import 'package:get/get.dart';
 
 void main() {
-  Get.put(CharacterController());
   Gemini.init(apiKey: 'AIzaSyAk06KZ-fk-yyysBSJ2l_4r6TnkkZihPMs');
   runApp(const MyApp());
 }
