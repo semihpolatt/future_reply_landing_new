@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gradient_animation_text/flutter_gradient_animation_text.dart';
 import 'package:future_reply_landing_new/query_page.dart';
 import 'package:get/get.dart';
-import 'package:badges/badges.dart' as badges;
-
-import 'package:timer_count_down/timer_count_down.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -63,34 +60,24 @@ class HomePage extends StatelessWidget {
                     GestureDetector(
                       onTap: () {
                         Get.to(
-                            QueryPage(
-                              heroTag: heroTag,
-                            ),
-                            // curve: Curves.ease,
-                            transition: Transition.circularReveal,
-                            duration: const Duration(seconds: 2));
+                          QueryPage(
+                            heroTag: heroTag,
+                          ),
+                          // curve: Curves.ease,
+                          /* transition: Transition.circularReveal,
+                          duration: const Duration(seconds: 2), */
+                        );
                         /*    Get.toNamed('/queryPage',
                             arguments: {'heroTag': heroTag}); */
                       },
                       child: Hero(
                         tag: heroTag,
-                        child: badges.Badge(
-                          badgeContent: Countdown(
-                            seconds: 40,
-                            build: (BuildContext context, double time) => Text(
-                              (time * 10).toString(),
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                            interval: const Duration(milliseconds: 100),
-                            onFinished: () {},
-                          ),
-                          child: Container(
-                            height: 50,
-                            width: 50,
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                                    image: AssetImage(heroTag))),
-                          ),
+                        child: Container(
+                          height: 50,
+                          width: 50,
+                          decoration: BoxDecoration(
+                              image:
+                                  DecorationImage(image: AssetImage(heroTag))),
                         ),
                       ),
                     ),

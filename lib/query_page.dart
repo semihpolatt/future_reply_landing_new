@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:get/get.dart';
 import 'package:glassmorphism_widgets/glassmorphism_widgets.dart';
-import 'package:timer_count_down/timer_count_down.dart';
-import 'package:badges/badges.dart' as badges;
 
 class QueryPage extends StatelessWidget {
   final String? heroTag;
@@ -35,25 +33,12 @@ class QueryPage extends StatelessWidget {
                   },
                   child: Hero(
                     tag: heroTag!,
-                    child: badges.Badge(
-                      badgeContent: Countdown(
-                        seconds: 40,
-                        build: (BuildContext context, double time) => Text(
-                          (time * 10).toString(),
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        interval: const Duration(
-                          milliseconds: 100,
-                        ),
-                        onFinished: () {},
-                      ),
-                      child: Container(
-                        height: 100,
-                        width: 100,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(heroTag!),
-                          ),
+                    child: Container(
+                      height: 100,
+                      width: 100,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(heroTag!),
                         ),
                       ),
                     ),
