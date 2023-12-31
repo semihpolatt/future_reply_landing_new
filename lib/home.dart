@@ -60,10 +60,19 @@ class HomePage extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => QueryPage(
+                          PageRouteBuilder(
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    QueryPage(
                               heroTag: heroTag,
                             ),
+                            transitionsBuilder: (context, animation,
+                                    secondaryAnimation, child) =>
+                                FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            ),
+                            transitionDuration: Duration(seconds: 2),
                           ),
                         );
                       },
