@@ -10,7 +10,8 @@ class QueryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    CharacterController characterController = Get.put(CharacterController());
+    // CharacterController characterController = Get.put(CharacterController());
+    CharacterController characterController = Get.find<CharacterController>();
     return Scaffold(
       backgroundColor: Colors.black,
       body: SingleChildScrollView(
