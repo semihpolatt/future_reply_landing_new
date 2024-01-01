@@ -10,6 +10,8 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Get.put(CharacterController());
+    double h = Get.height;
+    double w = Get.width;
     return Scaffold(
       backgroundColor: Colors.black,
       body: Column(
@@ -19,30 +21,48 @@ class HomePage extends StatelessWidget {
           const SizedBox(
             height: 100,
           ),
-          GradientAnimationText(
-            duration: const Duration(seconds: 2),
-            text: const Text(
+          if (w >= 500)
+            GradientAnimationText(
+              duration: const Duration(seconds: 2),
+              text: Text(
+                "FutureReply",
+                style: TextStyle(fontSize: 80.0, fontWeight: FontWeight.bold),
+              ),
+              colors: [
+                Colors.grey.shade500,
+                Colors.white,
+                //Colors.teal,
+              ],
+            )
+          else
+            Text(
               "FutureReply",
-              style: TextStyle(fontSize: 80.0, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  fontSize: w >= 500 ? 80.0 : 50,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey),
             ),
-            colors: [
-              Colors.grey.shade500,
-              Colors.white,
-              //Colors.teal,
-            ],
-          ),
-          GradientAnimationText(
-            duration: const Duration(seconds: 3),
-            text: const Text(
+          if (w >= 500)
+            GradientAnimationText(
+              duration: const Duration(seconds: 3),
+              text: const Text(
+                "Extreme Fast Reply",
+                style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.w100),
+              ),
+              colors: [
+                Colors.grey.shade500,
+                Colors.white,
+                //Colors.teal,
+              ],
+            )
+          else
+            Text(
               "Extreme Fast Reply",
-              style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.w100),
+              style: TextStyle(
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.w100,
+                  color: Colors.grey),
             ),
-            colors: [
-              Colors.grey.shade500,
-              Colors.white,
-              //Colors.teal,
-            ],
-          ),
           const SizedBox(
             height: 50,
           ),
@@ -85,8 +105,8 @@ class HomePage extends StatelessWidget {
                       child: Hero(
                         tag: heroTag,
                         child: Container(
-                          height: 70,
-                          width: 70,
+                          height: w >= 500 ? 70 : 50,
+                          width: w >= 500 ? 70 : 50,
                           decoration: BoxDecoration(
                               image:
                                   DecorationImage(image: AssetImage(heroTag))),
