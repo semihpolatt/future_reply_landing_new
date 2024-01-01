@@ -55,8 +55,7 @@ class QueryPage extends StatelessWidget {
                     padding: const EdgeInsets.only(left: 8.0),
                     child: TextField(
                       onChanged: (value) {
-                        characterController.query.value =
-                            textEditingController.text;
+                        characterController.query = value.obs;
                       },
                       maxLines: null,
                       style: const TextStyle(
