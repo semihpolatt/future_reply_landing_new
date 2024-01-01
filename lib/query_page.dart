@@ -46,7 +46,7 @@ class QueryPage extends StatelessWidget {
               const SizedBox(
                 height: 10,
               ),
-              if (w > 500)
+              if (w > 1200)
                 GlassContainer(
                   height: 150,
                   width: 400,
