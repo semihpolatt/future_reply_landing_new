@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gradient_animation_text/flutter_gradient_animation_text.dart';
 import 'package:future_reply_landing_new/query_page.dart';
 import 'package:get/get.dart';
+import 'dart:html' as html;
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -58,6 +59,9 @@ class HomePage extends StatelessWidget {
               ])
                 Row(
                   children: [
+                    SizedBox(
+                      width: 5,
+                    ),
                     GestureDetector(
                       onTap: () {
                         Navigator.push(
@@ -81,23 +85,49 @@ class HomePage extends StatelessWidget {
                       child: Hero(
                         tag: heroTag,
                         child: Container(
-                          height: 50,
-                          width: 50,
+                          height: 70,
+                          width: 70,
                           decoration: BoxDecoration(
                               image:
                                   DecorationImage(image: AssetImage(heroTag))),
                         ),
                       ),
                     ),
+                    SizedBox(
+                      width: 5,
+                    ),
                   ],
                 ),
             ],
           ),
           const SizedBox(
-            height: 30,
+            height: 50,
           ),
+          InkWell(
+            onTap: () {
+              openInWindow('https://forms.gle/GkxFAFWY7RjE1iNq8', '_blank');
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10.0),
+                color: Colors.grey,
+              ),
+              child: Text(
+                'Join the Waitlist!',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w300),
+              ),
+            ),
+          )
         ],
       ),
     );
   }
+}
+
+void openInWindow(String uri, String name) {
+  html.window.open(uri, name);
 }
