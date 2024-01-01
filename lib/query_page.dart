@@ -15,8 +15,10 @@ class QueryPage extends StatelessWidget {
     TextEditingController textEditingController = TextEditingController();
     // CharacterController characterController = Get.put(CharacterController());
     //CharacterController characterController = Get.find<CharacterController>();
-    double h = Get.height;
-    double w = Get.width;
+
+    double h = MediaQuery.of(context).size.height;
+    double w = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: SingleChildScrollView(
@@ -46,7 +48,7 @@ class QueryPage extends StatelessWidget {
               const SizedBox(
                 height: 10,
               ),
-              if (w > 1200)
+              if (w > 500)
                 GlassContainer(
                   height: 150,
                   width: 400,
