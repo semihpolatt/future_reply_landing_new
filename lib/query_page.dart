@@ -30,6 +30,9 @@ class QueryPage extends StatelessWidget {
               ),
               InkWell(
                 onTap: () {
+                  characterController.answer = ''.obs;
+                  characterController.query = ''.obs;
+                  characterController.prompt = ''.obs;
                   Navigator.pop(context);
                 },
                 child: Hero(
