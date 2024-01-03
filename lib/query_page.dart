@@ -132,8 +132,8 @@ class QueryPage extends StatelessWidget {
                   characterController.isPromptOpen.value =
                       !characterController.isPromptOpen.value;
                 },
-                child: Text(
-                  'Prompts(Optinial)${characterController.query.value}',
+                child: const Text(
+                  'Prompts(Optional)',
                   textAlign: TextAlign.right,
                   style: TextStyle(color: Colors.grey),
                 ),

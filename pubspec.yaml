@@ -43,6 +43,7 @@ dependencies:
   flutter_gemini: ^2.0.0
   glassmorphism_widgets: ^0.2.2
   selectable: ^0.3.0
+  device_info_plus: ^9.1.1
 
 dev_dependencies:
   flutter_test:
