@@ -144,43 +144,48 @@ class QueryPage extends StatelessWidget {
 
               Obx(() {
                 if (characterController.isPromptOpen.value == true) {
-                  return SizedBox(
-                    width: 400,
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: TextField(
-                            onChanged: (value) {
-                              // characterController.query.value = value;
-                              characterController.prompt = value.obs;
-                            },
-                            maxLines: null,
-                            style: const TextStyle(
-                              /*   fontSize: 20,
-                                              fontWeight: FontWeight.normal, */
-                              color: Colors.white,
-                              letterSpacing: 0,
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 400,
+                        child: Column(
+                          children: [
+                            const SizedBox(
+                              height: 10,
                             ),
-                            decoration: InputDecoration(
-                              //  contentPadding: EdgeInsets.only(right: 30.0),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: TextField(
+                                onChanged: (value) {
+                                  // characterController.query.value = value;
+                                  characterController.prompt = value.obs;
+                                },
+                                maxLines: null,
+                                style: const TextStyle(
+                                  /*   fontSize: 20,
+                                                  fontWeight: FontWeight.normal, */
+                                  color: Colors.white,
+                                  letterSpacing: 0,
+                                ),
+                                decoration: InputDecoration(
+                                  //  contentPadding: EdgeInsets.only(right: 30.0),
 
-                              labelText: 'Write Your Prompts Here',
-                              labelStyle: TextStyle(
-                                // fontSize: 20,
-                                fontWeight: FontWeight.normal,
-                                color: Colors.grey[50],
-                                letterSpacing: 0,
+                                  labelText: 'Write Your Prompts Here',
+                                  labelStyle: TextStyle(
+                                    // fontSize: 20,
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.grey[50],
+                                    letterSpacing: 0,
+                                  ),
+                                  border: InputBorder.none,
+                                ),
                               ),
-                              border: InputBorder.none,
                             ),
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   );
                 } else {
                   return Container();
