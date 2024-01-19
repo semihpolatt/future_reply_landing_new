@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
+import 'package:future_reply_landing_new/access_login_page.dart';
+import 'package:future_reply_landing_new/auth_control_page.dart';
 import 'package:future_reply_landing_new/home.dart';
 import 'package:future_reply_landing_new/query_page.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
-void main() {
+void main() async {
+  await GetStorage.init();
   Gemini.init(apiKey: 'AIzaSyAk06KZ-fk-yyysBSJ2l_4r6TnkkZihPMs');
   runApp(const MyApp());
 }
@@ -23,7 +27,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      //home: const HomePage(),
+      home: AuthControlPage(),
     );
   }
 }

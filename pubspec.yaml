@@ -44,6 +44,7 @@ dependencies:
   glassmorphism_widgets: ^0.2.2
   selectable: ^0.3.0
   device_info_plus: ^9.1.1
+  get_storage:
 
 dev_dependencies:
   flutter_test:

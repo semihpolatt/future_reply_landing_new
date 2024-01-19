@@ -278,6 +278,7 @@ class CharacterController extends GetxController {
   RxString answer = ''.obs;
   RxString query = ''.obs;
   RxString prompt = ''.obs;
+  RxString accessCode = ''.obs;
   RxBool isPromptOpen = false.obs;
 
   final gemini = Gemini.instance;
