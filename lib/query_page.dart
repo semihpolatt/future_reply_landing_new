@@ -1,7 +1,9 @@
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
+import 'package:future_reply_landing_new/access_login_page.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:glassmorphism_widgets/glassmorphism_widgets.dart';
 
 class QueryPage extends StatelessWidget {
@@ -282,6 +284,30 @@ class CharacterController extends GetxController {
   RxBool isPromptOpen = false.obs;
 
   final gemini = Gemini.instance;
+
+  final box = GetStorage();
+  RxBool log = false.obs;
+
+  @override
+  onInit() {
+    log.value = isloggedIn();
+    if (log == true) {
+    } else {
+      Future.delayed(Duration.zero, () {
+        Get.offAll(AccessLoginPage());
+      });
+    }
+  }
+
+  isloggedIn() {
+    if (box.read('accessCode') != null) {
+      return true;
+      //Get.offAll(SilverAppBarWithTabBarScreen());
+    } else {
+      return false;
+      //Get.offAll(Login1Page());
+    }
+  }
 
   query1() {
     answer.value = '';
