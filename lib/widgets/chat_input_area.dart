@@ -6,8 +6,75 @@ import '../query_page.dart';
 import 'dart:html' as html;
 import 'package:flutter/services.dart';
 
-class ChatInputArea extends StatelessWidget {
+class ChatInputArea extends StatefulWidget {
   const ChatInputArea({super.key});
+
+  @override
+  State<ChatInputArea> createState() => _ChatInputAreaState();
+}
+
+class _ChatInputAreaState extends State<ChatInputArea> {
+  late TextEditingController _queryController;
+  late TextEditingController _promptController;
+  late FocusNode _queryFocusNode;
+  late FocusNode _promptFocusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _queryController = TextEditingController();
+    _promptController = TextEditingController();
+    _queryFocusNode = FocusNode();
+    _promptFocusNode = FocusNode();
+
+    // Add listeners to sync controllers with GetX reactive variables
+    _queryController.addListener(() {
+      final CharacterController characterController =
+          Get.find<CharacterController>();
+      if (_queryController.text != characterController.query.value) {
+        characterController.query.value = _queryController.text;
+      }
+    });
+
+    _promptController.addListener(() {
+      final CharacterController characterController =
+          Get.find<CharacterController>();
+      if (_promptController.text != characterController.prompt.value) {
+        characterController.prompt.value = _promptController.text;
+      }
+    });
+
+    // Listen to answer changes to clear query field when response is received
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final CharacterController characterController =
+          Get.find<CharacterController>();
+      ever(characterController.answer, (String answer) {
+        if (answer.isNotEmpty && !characterController.isLoading.value) {
+          // Clear the query field when answer is received
+          _queryController.clear();
+          characterController.query.value = '';
+          // Ensure focus is removed
+          _clearAllFocus();
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _queryController.dispose();
+    _promptController.dispose();
+    _queryFocusNode.dispose();
+    _promptFocusNode.dispose();
+    super.dispose();
+  }
+
+  // Helper method to remove focus from all text fields
+  void _clearAllFocus() {
+    _queryFocusNode.unfocus();
+    _promptFocusNode.unfocus();
+    FocusScope.of(context).unfocus();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +100,11 @@ class ChatInputArea extends StatelessWidget {
 
         const SizedBox(height: 20),
 
-        // Chat bubbles
-        _buildChatBubbles(w, characterController, isMobileSafari),
+        // Chat bubbles - using Container with fixed height instead of Flexible
+        Container(
+          height: w > 500 ? 400 : 300, // Responsive yükseklik
+          child: _buildChatBubbles(w, characterController, isMobileSafari),
+        ),
       ],
     );
   }
@@ -52,9 +122,8 @@ class ChatInputArea extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.only(left: 8.0),
           child: TextField(
-            onChanged: (value) {
-              controller.query.value = value;
-            },
+            controller: _queryController,
+            focusNode: _queryFocusNode,
             maxLines: null,
             style: const TextStyle(
               color: Colors.white,
@@ -66,6 +135,8 @@ class ChatInputArea extends StatelessWidget {
                 children: [
                   IconButton(
                     onPressed: () {
+                      // Remove focus from all text fields before sending
+                      _clearAllFocus();
                       controller.query1();
                     },
                     icon: const Icon(
@@ -107,9 +178,8 @@ class ChatInputArea extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: TextField(
-            onChanged: (value) {
-              controller.query.value = value;
-            },
+            controller: _queryController,
+            focusNode: _queryFocusNode,
             maxLines: null,
             style: const TextStyle(
               color: Colors.white,
@@ -121,6 +191,8 @@ class ChatInputArea extends StatelessWidget {
                 children: [
                   IconButton(
                     onPressed: () {
+                      // Remove focus from all text fields before sending
+                      _clearAllFocus();
                       controller.query1();
                     },
                     icon: const Icon(
@@ -189,9 +261,8 @@ class ChatInputArea extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(left: 8.0),
                       child: TextField(
-                        onChanged: (value) {
-                          controller.prompt.value = value;
-                        },
+                        controller: _promptController,
+                        focusNode: _promptFocusNode,
                         maxLines: null,
                         style: const TextStyle(
                           color: Colors.white,
@@ -222,57 +293,61 @@ class ChatInputArea extends StatelessWidget {
 
   Widget _buildChatBubbles(
       double w, CharacterController controller, bool isMobileSafari) {
-    return Column(
-      children: [
-        // User query bubble
-        _buildUserQueryBubble(w, controller, isMobileSafari),
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          // User query bubble
+          _buildUserQueryBubble(w, controller, isMobileSafari),
 
-        // Loading indicator (only show when loading and query is not empty)
-        Obx(() {
-          if (controller.isLoading.value && controller.query.value.isNotEmpty) {
-            if (w > 500) {
-              return SizedBox(
-                width: 400,
-                child: Bubble(
-                  radius: const Radius.circular(10),
-                  margin: const BubbleEdges.only(top: 10, left: 100, right: 10),
-                  padding: const BubbleEdges.all(15),
-                  nip: BubbleNip.rightBottom,
-                  color: const Color(0xff007AFE),
-                  child: const TypingIndicator(),
-                ),
-              );
-            } else {
-              return Container(
-                margin: EdgeInsets.only(
-                  bottom: isMobileSafari ? 15 : 10,
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(15),
-                        decoration: BoxDecoration(
-                          color: const Color(0xff007AFE),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const TypingIndicator(),
-                      ),
-                    ],
+          // Loading indicator (only show when loading and query is not empty)
+          Obx(() {
+            if (controller.isLoading.value &&
+                controller.query.value.isNotEmpty) {
+              if (w > 500) {
+                return SizedBox(
+                  width: 400,
+                  child: Bubble(
+                    radius: const Radius.circular(10),
+                    margin:
+                        const BubbleEdges.only(top: 10, left: 100, right: 10),
+                    padding: const BubbleEdges.all(15),
+                    nip: BubbleNip.rightBottom,
+                    color: const Color(0xff007AFE),
+                    child: const TypingIndicator(),
                   ),
-                ),
-              );
+                );
+              } else {
+                return Container(
+                  margin: EdgeInsets.only(
+                    bottom: isMobileSafari ? 15 : 10,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(15),
+                          decoration: BoxDecoration(
+                            color: const Color(0xff007AFE),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const TypingIndicator(),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+            } else {
+              return Container();
             }
-          } else {
-            return Container();
-          }
-        }),
+          }),
 
-        // AI answer bubble
-        _buildAnswerBubble(w, controller, isMobileSafari),
-      ],
+          // AI answer bubble
+          _buildAnswerBubble(w, controller, isMobileSafari),
+        ],
+      ),
     );
   }
 
@@ -290,10 +365,17 @@ class ChatInputArea extends StatelessWidget {
             padding: const BubbleEdges.all(10),
             nip: BubbleNip.leftBottom,
             color: const Color(0xffE9E9EB),
-            child: Text(
-              controller.query.value,
-              textAlign: TextAlign.left,
-              style: const TextStyle(color: Colors.black),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxHeight: 200, // Maksimum yükseklik sınırı
+              ),
+              child: SingleChildScrollView(
+                child: Text(
+                  controller.query.value,
+                  textAlign: TextAlign.left,
+                  style: const TextStyle(color: Colors.black),
+                ),
+              ),
             ),
           ),
         );
@@ -307,15 +389,20 @@ class ChatInputArea extends StatelessWidget {
             child: SizedBox(
               width: w - 40,
               child: Container(
+                constraints: const BoxConstraints(
+                  maxHeight: 200, // Maksimum yükseklik sınırı
+                ),
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: const Color(0xffE9E9EB),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Text(
-                  controller.query.value,
-                  textAlign: TextAlign.left,
-                  style: const TextStyle(color: Colors.black),
+                child: SingleChildScrollView(
+                  child: Text(
+                    controller.query.value,
+                    textAlign: TextAlign.left,
+                    style: const TextStyle(color: Colors.black),
+                  ),
                 ),
               ),
             ),
@@ -334,31 +421,47 @@ class ChatInputArea extends StatelessWidget {
         return SizedBox(
           width: 400,
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start, // Üstten hizala
             children: [
-              // Copy icon on the left
-              IconButton(
-                onPressed: () {
-                  _copyToClipboard(controller.answer.value);
-                },
-                icon: const Icon(
-                  Icons.copy,
-                  color: Colors.white,
-                  size: 40,
+              // Copy icon on the left - sabit pozisyon
+              Padding(
+                padding: const EdgeInsets.only(top: 10.0),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(20),
+                    onTap: () {
+                      _copyToClipboard(controller.answer.value);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      child: const Icon(
+                        Icons.copy,
+                        color: Colors.white,
+                        size: 40,
+                      ),
+                    ),
+                  ),
                 ),
-                tooltip: 'Copy the Response',
               ),
               // Bubble
               Expanded(
                 child: Bubble(
                   radius: const Radius.circular(10),
-                  margin: const BubbleEdges.only(top: 10, left: 10, right: 10),
+                  margin: const BubbleEdges.only(top: 10, left: 5, right: 10),
                   padding: const BubbleEdges.all(10),
                   nip: BubbleNip.rightBottom,
                   color: const Color(0xff007AFE),
-                  child: Text(
-                    controller.answer.value,
-                    textAlign: TextAlign.right,
-                    style: const TextStyle(color: Colors.white),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      maxHeight: 300, // Maksimum yükseklik sınırı
+                    ),
+                    child: SingleChildScrollView(
+                      child: Text(
+                        controller.answer.value,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -373,31 +476,45 @@ class ChatInputArea extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start, // Üstten hizala
               children: [
-                // Copy icon on the left
-                IconButton(
-                  onPressed: () {
-                    _copyToClipboard(controller.answer.value);
-                  },
-                  icon: const Icon(
-                    Icons.copy,
-                    color: Colors.white,
-                    size: 20,
+                // Copy icon on the left - sabit pozisyon
+                Padding(
+                  padding: const EdgeInsets.only(top: 5.0),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(15),
+                      onTap: () {
+                        _copyToClipboard(controller.answer.value);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        child: const Icon(
+                          Icons.copy,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                      ),
+                    ),
                   ),
-                  tooltip: 'Cevabı Kopyala',
                 ),
                 // Bubble
                 Expanded(
                   child: Container(
+                    constraints: const BoxConstraints(
+                      maxHeight: 300, // Maksimum yükseklik sınırı
+                    ),
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: const Color(0xff007AFE),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Text(
-                      controller.answer.value,
-                      textAlign: TextAlign.right,
-                      style: const TextStyle(color: Colors.white),
+                    child: SingleChildScrollView(
+                      child: Text(
+                        controller.answer.value,
+                        style: const TextStyle(color: Colors.white),
+                      ),
                     ),
                   ),
                 ),
@@ -461,7 +578,11 @@ class ChatInputArea extends StatelessWidget {
         try {
           String text = await html.window.navigator.clipboard!.readText();
           if (text.isNotEmpty) {
+            // Update both controller and text field
             controller.query.value = text;
+            _queryController.text = text;
+            // Remove focus from text field
+            _clearAllFocus();
             // Automatically trigger the query after pasting
             await Future.delayed(const Duration(milliseconds: 500));
             controller.query1();
@@ -476,7 +597,11 @@ class ChatInputArea extends StatelessWidget {
       try {
         ClipboardData? data = await Clipboard.getData('text/plain');
         if (data != null && data.text != null && data.text!.isNotEmpty) {
+          // Update both controller and text field
           controller.query.value = data.text!;
+          _queryController.text = data.text!;
+          // Remove focus from text field
+          _clearAllFocus();
           // Automatically trigger the query after pasting
           await Future.delayed(const Duration(milliseconds: 500));
           controller.query1();
@@ -543,8 +668,12 @@ class ChatInputArea extends StatelessWidget {
           TextButton(
             onPressed: () async {
               if (pasteController.text.isNotEmpty) {
+                // Update both controller and text field
                 controller.query.value = pasteController.text;
+                _queryController.text = pasteController.text;
                 Get.back();
+                // Remove focus from text field
+                _clearAllFocus();
                 // Automatically trigger the query after pasting
                 await Future.delayed(const Duration(milliseconds: 500));
                 controller.query1();
