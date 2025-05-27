@@ -15,36 +15,36 @@ class _CreateCharacterPageState extends State<CreateCharacterPage> {
   String selectedEmoji = '😊';
 
   final List<String> availableEmojis = [
-    '😊',
-    '🤝',
-    '🎭',
-    '🧠',
-    '⚡',
-    '🎯',
-    '🚀',
-    '💡',
-    '🎨',
-    '🔥',
-    '💪',
-    '🌟',
-    '🎪',
-    '🎵',
-    '📚',
-    '🔬',
-    '⚖️',
-    '🏆',
-    '🎲',
-    '🌈',
-    '🦄',
-    '🐱',
-    '🐶',
-    '🦊',
-    '🐼',
-    '🦁',
-    '🐸',
-    '🦋',
-    '🌺',
-    '🌙'
+    '💼', // LinkedIn Warrior
+    '💕', // Dating Guru
+    '👯‍♀️', // Best Friend
+    '🤝', // Sales Negotiator
+    '☕', // Coffee Addict
+    '🎮', // Gaming Buddy
+    '📱', // Social Media Expert
+    '🍕', // Foodie Friend
+    '💻', // Tech Guru
+    '🎯', // Goal Getter
+    '🚀', // Startup Founder
+    '💡', // Idea Generator
+    '🔥', // Trendsetter
+    '💪', // Gym Buddy
+    '🌟', // Influencer
+    '🎪', // Party Planner
+    '🎵', // Music Lover
+    '📚', // Study Buddy
+    '🏆', // Winner
+    '🎲', // Risk Taker
+    '🌈', // Optimist
+    '🦄', // Dreamer
+    '😎', // Cool Kid
+    '🤓', // Nerd
+    '🥳', // Party Animal
+    '😴', // Sleepyhead
+    '🤔', // Thinker
+    '😂', // Comedian
+    '🙄', // Sarcastic
+    '💰' // Money Maker
   ];
 
   final storage = GetStorage();

@@ -17,12 +17,14 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   int selectedCharacterIndex = 0;
+  bool useCharacter = false;
   final storage = GetStorage();
 
   @override
   void initState() {
     super.initState();
-    // Load previously selected character
+    // Load previously selected character and toggle state
+    useCharacter = storage.read('use_character') ?? false;
     final savedCharacter = storage.read('selected_character');
     if (savedCharacter != null) {
       final allChars = allCharacters;
@@ -39,29 +41,44 @@ class _SettingsPageState extends State<SettingsPage> {
 
   final List<Map<String, String>> defaultCharacters = [
     {
+      'emoji': '💼',
+      'title': 'LinkedIn Warrior',
+      'description': 'professional, networker, ambitious'
+    },
+    {
+      'emoji': '💕',
+      'title': 'Dating Guru',
+      'description': 'charming, confident, romantic'
+    },
+    {
+      'emoji': '👯‍♀️',
+      'title': 'Best Friend',
+      'description': 'supportive, loyal, fun'
+    },
+    {
       'emoji': '🤝',
-      'title': 'Negotiator',
-      'description': 'tough, funny, professional'
+      'title': 'Sales Negotiator',
+      'description': 'persuasive, tough, deal-maker'
     },
     {
-      'emoji': '🎭',
-      'title': 'Creative',
-      'description': 'artistic, inspiring, imaginative'
+      'emoji': '☕',
+      'title': 'Coffee Addict',
+      'description': 'energetic, workaholic, caffeine-powered'
     },
     {
-      'emoji': '🧠',
-      'title': 'Analyst',
-      'description': 'logical, precise, insightful'
+      'emoji': '🎮',
+      'title': 'Gaming Buddy',
+      'description': 'competitive, strategic, night owl'
     },
     {
-      'emoji': '😊',
-      'title': 'Friendly',
-      'description': 'warm, supportive, cheerful'
+      'emoji': '📱',
+      'title': 'Social Media Expert',
+      'description': 'trendy, influencer, digital native'
     },
     {
-      'emoji': '⚡',
-      'title': 'Dynamic',
-      'description': 'energetic, fast, decisive'
+      'emoji': '🍕',
+      'title': 'Foodie Friend',
+      'description': 'adventurous, social, always hungry'
     },
   ];
 
@@ -251,133 +268,166 @@ class _SettingsPageState extends State<SettingsPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Character Personality',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
+                      // Use Character Toggle
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Use Character',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          Switch(
+                            value: useCharacter,
+                            onChanged: (value) {
+                              setState(() {
+                                useCharacter = value;
+                                storage.write('use_character', value);
+                              });
+                            },
+                            activeColor: Colors.white,
+                            activeTrackColor: Colors.white.withOpacity(0.3),
+                            inactiveThumbColor: Colors.grey,
+                            inactiveTrackColor: Colors.grey.withOpacity(0.3),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 20),
-                      // Character Slider
-                      SizedBox(
-                        height: 120,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount:
-                              characters.length + 1, // +1 for "Create New"
-                          itemBuilder: (context, index) {
-                            if (index == characters.length) {
-                              // Create New Character Card
+                      if (useCharacter) ...[
+                        const SizedBox(height: 20),
+                        const Text(
+                          'Character Personality',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        // Character Slider
+                        SizedBox(
+                          height: 120,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount:
+                                characters.length + 1, // +1 for "Create New"
+                            itemBuilder: (context, index) {
+                              if (index == characters.length) {
+                                // Create New Character Card
+                                return GestureDetector(
+                                  onTap: navigateToCreateCharacter,
+                                  child: Container(
+                                    width: 100,
+                                    margin: const EdgeInsets.only(right: 12),
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[850],
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: Colors.grey[700]!,
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: const Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.add,
+                                          color: Colors.grey,
+                                          size: 32,
+                                        ),
+                                        SizedBox(height: 8),
+                                        Text(
+                                          'Create New',
+                                          style: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }
+
+                              // Character Card
+                              final character = characters[index];
                               return GestureDetector(
-                                onTap: navigateToCreateCharacter,
+                                onTap: () {
+                                  setState(() {
+                                    selectedCharacterIndex = index;
+                                  });
+                                },
+                                onLongPress: () {
+                                  deleteCharacter(index);
+                                },
                                 child: Container(
                                   width: 100,
                                   margin: const EdgeInsets.only(right: 12),
                                   decoration: BoxDecoration(
-                                    color: Colors.grey[850],
+                                    color: selectedCharacterIndex == index
+                                        ? Colors.white.withOpacity(0.1)
+                                        : Colors.grey[850],
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
-                                      color: Colors.grey[700]!,
-                                      width: 1,
+                                      color: selectedCharacterIndex == index
+                                          ? Colors.white.withOpacity(0.3)
+                                          : Colors.grey[700]!,
+                                      width: selectedCharacterIndex == index
+                                          ? 2
+                                          : 1,
                                     ),
                                   ),
-                                  child: const Column(
+                                  child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(
-                                        Icons.add,
-                                        color: Colors.grey,
-                                        size: 32,
-                                      ),
-                                      SizedBox(height: 8),
                                       Text(
-                                        'Create New',
+                                        character['emoji']!,
+                                        style: const TextStyle(fontSize: 32),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        character['title']!,
                                         style: TextStyle(
-                                          color: Colors.grey,
+                                          color: selectedCharacterIndex == index
+                                              ? Colors.white
+                                              : Colors.grey[300],
                                           fontSize: 12,
-                                          fontWeight: FontWeight.w500,
+                                          fontWeight: FontWeight.w600,
                                         ),
                                         textAlign: TextAlign.center,
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 4),
+                                        child: Text(
+                                          character['description']!,
+                                          style: TextStyle(
+                                            color:
+                                                selectedCharacterIndex == index
+                                                    ? Colors.grey[400]
+                                                    : Colors.grey[500],
+                                            fontSize: 9,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
                                       ),
                                     ],
                                   ),
                                 ),
                               );
-                            }
-
-                            // Character Card
-                            final character = characters[index];
-                            return GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  selectedCharacterIndex = index;
-                                });
-                              },
-                              onLongPress: () {
-                                deleteCharacter(index);
-                              },
-                              child: Container(
-                                width: 100,
-                                margin: const EdgeInsets.only(right: 12),
-                                decoration: BoxDecoration(
-                                  color: selectedCharacterIndex == index
-                                      ? Colors.white.withOpacity(0.1)
-                                      : Colors.grey[850],
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: selectedCharacterIndex == index
-                                        ? Colors.white.withOpacity(0.3)
-                                        : Colors.grey[700]!,
-                                    width:
-                                        selectedCharacterIndex == index ? 2 : 1,
-                                  ),
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      character['emoji']!,
-                                      style: const TextStyle(fontSize: 32),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      character['title']!,
-                                      style: TextStyle(
-                                        color: selectedCharacterIndex == index
-                                            ? Colors.white
-                                            : Colors.grey[300],
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 4),
-                                      child: Text(
-                                        character['description']!,
-                                        style: TextStyle(
-                                          color: selectedCharacterIndex == index
-                                              ? Colors.grey[400]
-                                              : Colors.grey[500],
-                                          fontSize: 9,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
+                            },
+                          ),
                         ),
-                      ),
+                      ],
                     ],
                   ),
                 ),
@@ -387,11 +437,26 @@ class _SettingsPageState extends State<SettingsPage> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Save selected character to storage
-                      if (selectedCharacterIndex < allCharacters.length) {
+                      // Save selected character and toggle state to storage
+                      storage.write('use_character', useCharacter);
+                      if (useCharacter &&
+                          selectedCharacterIndex < allCharacters.length) {
                         storage.write('selected_character',
                             allCharacters[selectedCharacterIndex]);
+                      } else if (!useCharacter) {
+                        // Clear selected character when toggle is off
+                        storage.remove('selected_character');
                       }
+
+                      // Show success message
+                      Get.snackbar(
+                        'Success',
+                        'Settings saved successfully!',
+                        backgroundColor: Colors.green.withOpacity(0.8),
+                        colorText: Colors.white,
+                        snackPosition: SnackPosition.TOP,
+                      );
+
                       widget.onSave();
                     },
                     style: ElevatedButton.styleFrom(

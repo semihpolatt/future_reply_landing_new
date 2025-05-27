@@ -314,10 +314,26 @@ class CharacterController extends GetxController {
     answer.value = '';
     isLoading.value = true;
 
-    gemini.promptStream(parts: [
-      Part.text(
-          "${prompt.value} ,Write a reply tweet, (sentence count is tweet's sentence count) to this tweet: ${query.value}")
-    ]).listen((value) {
+    // Read character settings from storage
+    bool useCharacter = box.read('use_character') ?? false;
+    Map<String, dynamic>? selectedCharacter = box.read('selected_character');
+
+    String finalPrompt = '';
+
+    if (useCharacter && selectedCharacter != null) {
+      // Create character-based prompt
+      String characterTitle = selectedCharacter['title'] ?? '';
+      String characterDescription = selectedCharacter['description'] ?? '';
+
+      finalPrompt =
+          "You are a ${characterTitle.toLowerCase()} character with these traits: ${characterDescription}. Write a reply tweet in this character's style and personality. ${prompt.value.isNotEmpty ? 'Additional instructions: ${prompt.value}' : ''} Write a reply tweet (sentence count is tweet's sentence count) to this tweet: ${query.value}";
+    } else {
+      // Use original prompt format
+      finalPrompt =
+          "${prompt.value.isNotEmpty ? '${prompt.value}, ' : ''}Write a reply tweet, (sentence count is tweet's sentence count) to this tweet: ${query.value}";
+    }
+
+    gemini.promptStream(parts: [Part.text(finalPrompt)]).listen((value) {
       // print(value.output);
       if (value?.output != null) {
         answer.value = answer.value + value!.output!;
