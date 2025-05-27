@@ -5,6 +5,7 @@ import 'package:glassmorphism_widgets/glassmorphism_widgets.dart';
 import '../query_page.dart';
 import 'dart:html' as html;
 import 'package:flutter/services.dart';
+import 'typing_indicator.dart';
 
 class ChatInputArea extends StatefulWidget {
   const ChatInputArea({super.key});
@@ -493,7 +494,7 @@ class _ChatInputAreaState extends State<ChatInputArea> {
                         child: const Icon(
                           Icons.copy,
                           color: Colors.white,
-                          size: 18,
+                          size: 40,
                         ),
                       ),
                     ),
@@ -545,10 +546,56 @@ class _ChatInputAreaState extends State<ChatInputArea> {
     try {
       // Try using Flutter's clipboard first
       await Clipboard.setData(ClipboardData(text: text));
+
+      // Show small notification
+      Get.snackbar(
+        '',
+        'Message copied',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.black87,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+        margin: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
+        borderRadius: 8,
+        maxWidth: 200,
+        titleText: const SizedBox.shrink(), // Hide title
+        messageText: const Text(
+          'Message copied',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 14,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        animationDuration: const Duration(milliseconds: 300),
+      );
     } catch (e) {
       // Fallback for web browsers
       try {
         html.window.navigator.clipboard?.writeText(text);
+
+        // Show small notification for web fallback too
+        Get.snackbar(
+          '',
+          'Message copied',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.black87,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 2),
+          margin: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
+          borderRadius: 8,
+          maxWidth: 200,
+          titleText: const SizedBox.shrink(), // Hide title
+          messageText: const Text(
+            'Message copied',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          animationDuration: const Duration(milliseconds: 300),
+        );
       } catch (webError) {
         // Final fallback for older browsers
         _fallbackCopyToClipboard(text);
@@ -565,6 +612,29 @@ class _ChatInputAreaState extends State<ChatInputArea> {
       textArea.select();
       html.document.execCommand('copy');
       textArea.remove();
+
+      // Show small notification for fallback method too
+      Get.snackbar(
+        '',
+        'Message copied',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.black87,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+        margin: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
+        borderRadius: 8,
+        maxWidth: 200,
+        titleText: const SizedBox.shrink(), // Hide title
+        messageText: const Text(
+          'Message copied',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 14,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        animationDuration: const Duration(milliseconds: 300),
+      );
     } catch (e) {
       print('Kopyalama başarısız oldu');
     }
@@ -692,118 +762,5 @@ class _ChatInputAreaState extends State<ChatInputArea> {
   // Fallback method for older browsers and iOS Safari
   void _fallbackPasteFromClipboard(CharacterController controller) {
     _showManualPasteDialog(controller);
-  }
-}
-
-// Animasyonlu 3 nokta widget'ı (iMessage tarzı)
-class TypingIndicator extends StatefulWidget {
-  const TypingIndicator({super.key});
-
-  @override
-  State<TypingIndicator> createState() => _TypingIndicatorState();
-}
-
-class _TypingIndicatorState extends State<TypingIndicator>
-    with TickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _animation1;
-  late Animation<double> _animation2;
-  late Animation<double> _animation3;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
-      vsync: this,
-    );
-
-    _animation1 = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: const Interval(0.0, 0.33, curve: Curves.easeInOut),
-      ),
-    );
-
-    _animation2 = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: const Interval(0.33, 0.66, curve: Curves.easeInOut),
-      ),
-    );
-
-    _animation3 = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: const Interval(0.66, 1.0, curve: Curves.easeInOut),
-      ),
-    );
-
-    _animationController.repeat();
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        AnimatedBuilder(
-          animation: _animation1,
-          builder: (context, child) {
-            return Transform.scale(
-              scale: 0.5 + (_animation1.value * 0.5),
-              child: Container(
-                width: 8,
-                height: 8,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                ),
-              ),
-            );
-          },
-        ),
-        const SizedBox(width: 4),
-        AnimatedBuilder(
-          animation: _animation2,
-          builder: (context, child) {
-            return Transform.scale(
-              scale: 0.5 + (_animation2.value * 0.5),
-              child: Container(
-                width: 8,
-                height: 8,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                ),
-              ),
-            );
-          },
-        ),
-        const SizedBox(width: 4),
-        AnimatedBuilder(
-          animation: _animation3,
-          builder: (context, child) {
-            return Transform.scale(
-              scale: 0.5 + (_animation3.value * 0.5),
-              child: Container(
-                width: 8,
-                height: 8,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                ),
-              ),
-            );
-          },
-        ),
-      ],
-    );
   }
 }
