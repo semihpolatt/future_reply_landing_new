@@ -61,15 +61,31 @@ class ChatInputArea extends StatelessWidget {
               letterSpacing: 0,
             ),
             decoration: InputDecoration(
-              suffixIcon: IconButton(
-                onPressed: () {
-                  controller.query1();
-                },
-                icon: const Icon(
-                  Icons.send,
-                  color: Colors.white,
-                  size: 40,
-                ),
+              suffixIcon: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      controller.query1();
+                    },
+                    icon: const Icon(
+                      Icons.send,
+                      color: Colors.white,
+                      size: 40,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      _pasteFromClipboard(controller);
+                    },
+                    icon: const Icon(
+                      Icons.paste,
+                      color: Colors.white,
+                      size: 40,
+                    ),
+                    tooltip: 'Paste from Clipboard',
+                  ),
+                ],
               ),
               labelText: 'Paste Here',
               labelStyle: const TextStyle(
@@ -100,15 +116,31 @@ class ChatInputArea extends StatelessWidget {
               letterSpacing: 0,
             ),
             decoration: InputDecoration(
-              suffixIcon: IconButton(
-                onPressed: () {
-                  controller.query1();
-                },
-                icon: const Icon(
-                  Icons.send,
-                  color: Colors.white,
-                  size: 40,
-                ),
+              suffixIcon: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      controller.query1();
+                    },
+                    icon: const Icon(
+                      Icons.send,
+                      color: Colors.white,
+                      size: 40,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      _pasteFromClipboard(controller);
+                    },
+                    icon: const Icon(
+                      Icons.paste,
+                      color: Colors.white,
+                      size: 40,
+                    ),
+                    tooltip: 'Paste from Clipboard',
+                  ),
+                ],
               ),
               labelText: 'Paste Here',
               labelStyle: const TextStyle(
@@ -356,8 +388,8 @@ class ChatInputArea extends StatelessWidget {
 
       // Show success message
       Get.snackbar(
-        'Başarılı',
-        'Mesaj kopyalandı!',
+        'Success',
+        'Message copied!',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.green.withOpacity(0.8),
         colorText: Colors.white,
@@ -410,5 +442,138 @@ class ChatInputArea extends StatelessWidget {
         duration: const Duration(seconds: 2),
       );
     }
+  }
+
+  // Helper method to paste text from clipboard
+  void _pasteFromClipboard(CharacterController controller) async {
+    try {
+      // For web, try the modern clipboard API first
+      if (html.window.navigator.clipboard != null) {
+        try {
+          String text = await html.window.navigator.clipboard!.readText();
+          if (text.isNotEmpty) {
+            controller.query.value = text;
+            Get.snackbar(
+              'Success',
+              'Text pasted!',
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Colors.blue.withOpacity(0.8),
+              colorText: Colors.white,
+              duration: const Duration(seconds: 2),
+            );
+            return;
+          }
+        } catch (e) {
+          print('Clipboard API error: $e');
+        }
+      }
+
+      // Fallback: Try Flutter's clipboard
+      try {
+        ClipboardData? data = await Clipboard.getData('text/plain');
+        if (data != null && data.text != null && data.text!.isNotEmpty) {
+          controller.query.value = data.text!;
+          Get.snackbar(
+            'Success',
+            'Text pasted!',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.blue.withOpacity(0.8),
+            colorText: Colors.white,
+            duration: const Duration(seconds: 2),
+          );
+          return;
+        }
+      } catch (e) {
+        print('Flutter clipboard error: $e');
+      }
+
+      // If all else fails, show manual paste dialog
+      _showManualPasteDialog(controller);
+    } catch (e) {
+      print('General paste error: $e');
+      _showManualPasteDialog(controller);
+    }
+  }
+
+  // Show manual paste dialog
+  void _showManualPasteDialog(CharacterController controller) {
+    TextEditingController pasteController = TextEditingController();
+
+    Get.dialog(
+      AlertDialog(
+        backgroundColor: Colors.grey[900],
+        title: const Text(
+          'Paste Content',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Please paste your content below (Ctrl+V / Cmd+V):',
+              style: TextStyle(color: Colors.white70),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: pasteController,
+              autofocus: true,
+              maxLines: 5,
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(
+                hintText: 'Paste here and click Done...',
+                hintStyle: TextStyle(color: Colors.white54),
+                border: OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white54),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.blue),
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Get.back();
+            },
+            child:
+                const Text('Cancel', style: TextStyle(color: Colors.white70)),
+          ),
+          TextButton(
+            onPressed: () {
+              if (pasteController.text.isNotEmpty) {
+                controller.query.value = pasteController.text;
+                Get.back();
+                Get.snackbar(
+                  'Success',
+                  'Text pasted!',
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: Colors.blue.withOpacity(0.8),
+                  colorText: Colors.white,
+                  duration: const Duration(seconds: 2),
+                );
+              } else {
+                Get.snackbar(
+                  'Error',
+                  'Please paste some text first',
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: Colors.orange.withOpacity(0.8),
+                  colorText: Colors.white,
+                  duration: const Duration(seconds: 2),
+                );
+              }
+            },
+            child: const Text('Done', style: TextStyle(color: Colors.blue)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Fallback method for older browsers and iOS Safari
+  void _fallbackPasteFromClipboard(CharacterController controller) {
+    _showManualPasteDialog(controller);
   }
 }
