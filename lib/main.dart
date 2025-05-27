@@ -9,7 +9,7 @@ import 'package:get_storage/get_storage.dart';
 
 void main() async {
   await GetStorage.init();
-  Gemini.init(apiKey: 'AIzaSyAk06KZ-fk-yyysBSJ2l_4r6TnkkZihPMs');
+  Gemini.init(apiKey: 'AIzaSyAtMM6TQyTusUvRMtXs2JCGQlA0t78dU68');
   runApp(const MyApp());
 }
 

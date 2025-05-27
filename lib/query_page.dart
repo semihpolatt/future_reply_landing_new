@@ -312,13 +312,13 @@ class CharacterController extends GetxController {
   query1() {
     answer.value = '';
 
-    gemini
-        .streamGenerateContent(
-            "${prompt.value} ,Write a reply tweet, (sentence count is tweet's sentence count) to this tweet: ${query.value}")
-        .listen((value) {
+    gemini.promptStream(parts: [
+      Part.text(
+          "${prompt.value} ,Write a reply tweet, (sentence count is tweet's sentence count) to this tweet: ${query.value}")
+    ]).listen((value) {
       // print(value.output);
-      for (Parts i in value.content!.parts!) {
-        answer.value = answer.value + i.text!;
+      if (value?.output != null) {
+        answer.value = answer.value + value!.output!;
         answer.refresh();
       }
     });
