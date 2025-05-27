@@ -4,6 +4,7 @@ import 'package:bubble/bubble.dart';
 import 'package:glassmorphism_widgets/glassmorphism_widgets.dart';
 import '../query_page.dart';
 import 'dart:html' as html;
+import 'package:flutter/services.dart';
 
 class ChatInputArea extends StatelessWidget {
   const ChatInputArea({super.key});
@@ -52,7 +53,7 @@ class ChatInputArea extends StatelessWidget {
           padding: const EdgeInsets.only(left: 8.0),
           child: TextField(
             onChanged: (value) {
-              controller.query = value.obs;
+              controller.query.value = value;
             },
             maxLines: null,
             style: const TextStyle(
@@ -67,6 +68,7 @@ class ChatInputArea extends StatelessWidget {
                 icon: const Icon(
                   Icons.send,
                   color: Colors.white,
+                  size: 40,
                 ),
               ),
               labelText: 'Paste Here',
@@ -90,7 +92,7 @@ class ChatInputArea extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: TextField(
             onChanged: (value) {
-              controller.query = value.obs;
+              controller.query.value = value;
             },
             maxLines: null,
             style: const TextStyle(
@@ -105,6 +107,7 @@ class ChatInputArea extends StatelessWidget {
                 icon: const Icon(
                   Icons.send,
                   color: Colors.white,
+                  size: 40,
                 ),
               ),
               labelText: 'Paste Here',
@@ -155,7 +158,7 @@ class ChatInputArea extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 8.0),
                       child: TextField(
                         onChanged: (value) {
-                          controller.prompt = value.obs;
+                          controller.prompt.value = value;
                         },
                         maxLines: null,
                         style: const TextStyle(
@@ -255,17 +258,36 @@ class ChatInputArea extends StatelessWidget {
       if (w > 500) {
         return SizedBox(
           width: 400,
-          child: Bubble(
-            radius: const Radius.circular(10),
-            margin: const BubbleEdges.only(top: 10, left: 100, right: 10),
-            padding: const BubbleEdges.all(10),
-            nip: BubbleNip.rightBottom,
-            color: const Color(0xff007AFE),
-            child: Text(
-              controller.answer.value,
-              textAlign: TextAlign.right,
-              style: const TextStyle(color: Colors.white),
-            ),
+          child: Row(
+            children: [
+              // Copy icon on the left
+              IconButton(
+                onPressed: () {
+                  _copyToClipboard(controller.answer.value);
+                },
+                icon: const Icon(
+                  Icons.copy,
+                  color: Colors.white,
+                  size: 40,
+                ),
+                tooltip: 'Copy the Response',
+              ),
+              // Bubble
+              Expanded(
+                child: Bubble(
+                  radius: const Radius.circular(10),
+                  margin: const BubbleEdges.only(top: 10, left: 10, right: 10),
+                  padding: const BubbleEdges.all(10),
+                  nip: BubbleNip.rightBottom,
+                  color: const Color(0xff007AFE),
+                  child: Text(
+                    controller.answer.value,
+                    textAlign: TextAlign.right,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+            ],
           ),
         );
       } else {
@@ -275,20 +297,36 @@ class ChatInputArea extends StatelessWidget {
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: SizedBox(
-              width: w - 40,
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: const Color(0xff007AFE),
-                  borderRadius: BorderRadius.circular(10),
+            child: Row(
+              children: [
+                // Copy icon on the left
+                IconButton(
+                  onPressed: () {
+                    _copyToClipboard(controller.answer.value);
+                  },
+                  icon: const Icon(
+                    Icons.copy,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                  tooltip: 'Cevabı Kopyala',
                 ),
-                child: Text(
-                  controller.answer.value,
-                  textAlign: TextAlign.right,
-                  style: const TextStyle(color: Colors.white),
+                // Bubble
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xff007AFE),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      controller.answer.value,
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         );
@@ -307,6 +345,70 @@ class ChatInputArea extends StatelessWidget {
           !userAgent.contains('FxiOS');
     } catch (e) {
       return false;
+    }
+  }
+
+  // Helper method to copy text to clipboard
+  void _copyToClipboard(String text) async {
+    try {
+      // Try using Flutter's clipboard first
+      await Clipboard.setData(ClipboardData(text: text));
+
+      // Show success message
+      Get.snackbar(
+        'Başarılı',
+        'Mesaj kopyalandı!',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green.withOpacity(0.8),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+      );
+    } catch (e) {
+      // Fallback for web browsers
+      try {
+        html.window.navigator.clipboard?.writeText(text);
+        Get.snackbar(
+          'Başarılı',
+          'Mesaj kopyalandı!',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green.withOpacity(0.8),
+          colorText: Colors.white,
+          duration: const Duration(seconds: 2),
+        );
+      } catch (webError) {
+        // Final fallback for older browsers
+        _fallbackCopyToClipboard(text);
+      }
+    }
+  }
+
+  // Fallback method for older browsers
+  void _fallbackCopyToClipboard(String text) {
+    try {
+      final textArea = html.TextAreaElement();
+      textArea.value = text;
+      html.document.body?.append(textArea);
+      textArea.select();
+      html.document.execCommand('copy');
+      textArea.remove();
+
+      Get.snackbar(
+        'Başarılı',
+        'Mesaj kopyalandı!',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green.withOpacity(0.8),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Hata',
+        'Kopyalama başarısız oldu',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withOpacity(0.8),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+      );
     }
   }
 }
