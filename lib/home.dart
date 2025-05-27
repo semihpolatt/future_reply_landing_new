@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gradient_animation_text/flutter_gradient_animation_text.dart';
 import 'package:future_reply_landing_new/query_page.dart';
 import 'package:future_reply_landing_new/widgets/chat_input_area.dart';
+import 'package:future_reply_landing_new/settings_page.dart';
 import 'package:get/get.dart';
 import 'dart:html' as html;
 
@@ -22,6 +23,26 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: IconButton(
+              icon: const Icon(
+                Icons.settings,
+                color: Colors.grey,
+                size: 28,
+              ),
+              onPressed: () {
+                _openSettingsPage(context);
+              },
+            ),
+          ),
+        ],
+      ),
       body: SafeArea(
         bottom: false, // We'll handle bottom padding manually for Safari
         child: SingleChildScrollView(
@@ -114,5 +135,25 @@ class HomePage extends StatelessWidget {
     } catch (e) {
       return false;
     }
+  }
+
+  void _openSettingsPage(BuildContext context) {
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => SettingsPage(
+          onSave: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(
+            opacity: animation,
+            child: child,
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 300),
+        reverseTransitionDuration: const Duration(milliseconds: 300),
+      ),
+    );
   }
 }
