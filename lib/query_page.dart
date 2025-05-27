@@ -282,6 +282,7 @@ class CharacterController extends GetxController {
   RxString prompt = ''.obs;
   RxString accessCode = ''.obs;
   RxBool isPromptOpen = false.obs;
+  RxBool isLoading = false.obs;
 
   final gemini = Gemini.instance;
 
@@ -311,6 +312,7 @@ class CharacterController extends GetxController {
 
   query1() {
     answer.value = '';
+    isLoading.value = true;
 
     gemini.promptStream(parts: [
       Part.text(
@@ -321,6 +323,10 @@ class CharacterController extends GetxController {
         answer.value = answer.value + value!.output!;
         answer.refresh();
       }
+    }, onDone: () {
+      isLoading.value = false;
+    }, onError: (error) {
+      isLoading.value = false;
     });
   }
 }

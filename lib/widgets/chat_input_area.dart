@@ -227,6 +227,49 @@ class ChatInputArea extends StatelessWidget {
         // User query bubble
         _buildUserQueryBubble(w, controller, isMobileSafari),
 
+        // Loading indicator (only show when loading and query is not empty)
+        Obx(() {
+          if (controller.isLoading.value && controller.query.value.isNotEmpty) {
+            if (w > 500) {
+              return SizedBox(
+                width: 400,
+                child: Bubble(
+                  radius: const Radius.circular(10),
+                  margin: const BubbleEdges.only(top: 10, left: 100, right: 10),
+                  padding: const BubbleEdges.all(15),
+                  nip: BubbleNip.rightBottom,
+                  color: const Color(0xff007AFE),
+                  child: const TypingIndicator(),
+                ),
+              );
+            } else {
+              return Container(
+                margin: EdgeInsets.only(
+                  bottom: isMobileSafari ? 15 : 10,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          color: const Color(0xff007AFE),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const TypingIndicator(),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+          } else {
+            return Container();
+          }
+        }),
+
         // AI answer bubble
         _buildAnswerBubble(w, controller, isMobileSafari),
       ],
@@ -385,28 +428,10 @@ class ChatInputArea extends StatelessWidget {
     try {
       // Try using Flutter's clipboard first
       await Clipboard.setData(ClipboardData(text: text));
-
-      // Show success message
-      Get.snackbar(
-        'Success',
-        'Message copied!',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withOpacity(0.8),
-        colorText: Colors.white,
-        duration: const Duration(seconds: 2),
-      );
     } catch (e) {
       // Fallback for web browsers
       try {
         html.window.navigator.clipboard?.writeText(text);
-        Get.snackbar(
-          'Başarılı',
-          'Mesaj kopyalandı!',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.withOpacity(0.8),
-          colorText: Colors.white,
-          duration: const Duration(seconds: 2),
-        );
       } catch (webError) {
         // Final fallback for older browsers
         _fallbackCopyToClipboard(text);
@@ -423,24 +448,8 @@ class ChatInputArea extends StatelessWidget {
       textArea.select();
       html.document.execCommand('copy');
       textArea.remove();
-
-      Get.snackbar(
-        'Başarılı',
-        'Mesaj kopyalandı!',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withOpacity(0.8),
-        colorText: Colors.white,
-        duration: const Duration(seconds: 2),
-      );
     } catch (e) {
-      Get.snackbar(
-        'Hata',
-        'Kopyalama başarısız oldu',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
-        colorText: Colors.white,
-        duration: const Duration(seconds: 2),
-      );
+      print('Kopyalama başarısız oldu');
     }
   }
 
@@ -453,14 +462,6 @@ class ChatInputArea extends StatelessWidget {
           String text = await html.window.navigator.clipboard!.readText();
           if (text.isNotEmpty) {
             controller.query.value = text;
-            Get.snackbar(
-              'Success',
-              'Text pasted and processing...',
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: Colors.blue.withOpacity(0.8),
-              colorText: Colors.white,
-              duration: const Duration(seconds: 2),
-            );
             // Automatically trigger the query after pasting
             await Future.delayed(const Duration(milliseconds: 500));
             controller.query1();
@@ -476,14 +477,6 @@ class ChatInputArea extends StatelessWidget {
         ClipboardData? data = await Clipboard.getData('text/plain');
         if (data != null && data.text != null && data.text!.isNotEmpty) {
           controller.query.value = data.text!;
-          Get.snackbar(
-            'Success',
-            'Text pasted and processing...',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.blue.withOpacity(0.8),
-            colorText: Colors.white,
-            duration: const Duration(seconds: 2),
-          );
           // Automatically trigger the query after pasting
           await Future.delayed(const Duration(milliseconds: 500));
           controller.query1();
@@ -552,26 +545,12 @@ class ChatInputArea extends StatelessWidget {
               if (pasteController.text.isNotEmpty) {
                 controller.query.value = pasteController.text;
                 Get.back();
-                Get.snackbar(
-                  'Success',
-                  'Text pasted and processing...',
-                  snackPosition: SnackPosition.BOTTOM,
-                  backgroundColor: Colors.blue.withOpacity(0.8),
-                  colorText: Colors.white,
-                  duration: const Duration(seconds: 2),
-                );
                 // Automatically trigger the query after pasting
                 await Future.delayed(const Duration(milliseconds: 500));
                 controller.query1();
               } else {
-                Get.snackbar(
-                  'Error',
-                  'Please paste some text first',
-                  snackPosition: SnackPosition.BOTTOM,
-                  backgroundColor: Colors.orange.withOpacity(0.8),
-                  colorText: Colors.white,
-                  duration: const Duration(seconds: 2),
-                );
+                // Boş text durumunda sadece dialog'u kapat
+                Get.back();
               }
             },
             child: const Text('Done', style: TextStyle(color: Colors.blue)),
@@ -584,5 +563,118 @@ class ChatInputArea extends StatelessWidget {
   // Fallback method for older browsers and iOS Safari
   void _fallbackPasteFromClipboard(CharacterController controller) {
     _showManualPasteDialog(controller);
+  }
+}
+
+// Animasyonlu 3 nokta widget'ı (iMessage tarzı)
+class TypingIndicator extends StatefulWidget {
+  const TypingIndicator({super.key});
+
+  @override
+  State<TypingIndicator> createState() => _TypingIndicatorState();
+}
+
+class _TypingIndicatorState extends State<TypingIndicator>
+    with TickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _animation1;
+  late Animation<double> _animation2;
+  late Animation<double> _animation3;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    );
+
+    _animation1 = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.0, 0.33, curve: Curves.easeInOut),
+      ),
+    );
+
+    _animation2 = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.33, 0.66, curve: Curves.easeInOut),
+      ),
+    );
+
+    _animation3 = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.66, 1.0, curve: Curves.easeInOut),
+      ),
+    );
+
+    _animationController.repeat();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AnimatedBuilder(
+          animation: _animation1,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: 0.5 + (_animation1.value * 0.5),
+              child: Container(
+                width: 8,
+                height: 8,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            );
+          },
+        ),
+        const SizedBox(width: 4),
+        AnimatedBuilder(
+          animation: _animation2,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: 0.5 + (_animation2.value * 0.5),
+              child: Container(
+                width: 8,
+                height: 8,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            );
+          },
+        ),
+        const SizedBox(width: 4),
+        AnimatedBuilder(
+          animation: _animation3,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: 0.5 + (_animation3.value * 0.5),
+              child: Container(
+                width: 8,
+                height: 8,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            );
+          },
+        ),
+      ],
+    );
   }
 }
