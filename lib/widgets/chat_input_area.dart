@@ -418,6 +418,13 @@ class _ChatInputAreaState extends State<ChatInputArea> {
     return Obx(() {
       if (controller.answer.value.isEmpty) return Container();
 
+      // Automatically copy the answer when bubble appears
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (controller.answer.value.isNotEmpty && !controller.isLoading.value) {
+          _copyToClipboard(controller.answer.value);
+        }
+      });
+
       if (w > 500) {
         return SizedBox(
           width: 400,
