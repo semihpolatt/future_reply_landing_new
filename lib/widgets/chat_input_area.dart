@@ -455,12 +455,15 @@ class ChatInputArea extends StatelessWidget {
             controller.query.value = text;
             Get.snackbar(
               'Success',
-              'Text pasted!',
+              'Text pasted and processing...',
               snackPosition: SnackPosition.BOTTOM,
               backgroundColor: Colors.blue.withOpacity(0.8),
               colorText: Colors.white,
               duration: const Duration(seconds: 2),
             );
+            // Automatically trigger the query after pasting
+            await Future.delayed(const Duration(milliseconds: 500));
+            controller.query1();
             return;
           }
         } catch (e) {
@@ -475,12 +478,15 @@ class ChatInputArea extends StatelessWidget {
           controller.query.value = data.text!;
           Get.snackbar(
             'Success',
-            'Text pasted!',
+            'Text pasted and processing...',
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: Colors.blue.withOpacity(0.8),
             colorText: Colors.white,
             duration: const Duration(seconds: 2),
           );
+          // Automatically trigger the query after pasting
+          await Future.delayed(const Duration(milliseconds: 500));
+          controller.query1();
           return;
         }
       } catch (e) {
@@ -542,18 +548,21 @@ class ChatInputArea extends StatelessWidget {
                 const Text('Cancel', style: TextStyle(color: Colors.white70)),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               if (pasteController.text.isNotEmpty) {
                 controller.query.value = pasteController.text;
                 Get.back();
                 Get.snackbar(
                   'Success',
-                  'Text pasted!',
+                  'Text pasted and processing...',
                   snackPosition: SnackPosition.BOTTOM,
                   backgroundColor: Colors.blue.withOpacity(0.8),
                   colorText: Colors.white,
                   duration: const Duration(seconds: 2),
                 );
+                // Automatically trigger the query after pasting
+                await Future.delayed(const Duration(milliseconds: 500));
+                controller.query1();
               } else {
                 Get.snackbar(
                   'Error',
