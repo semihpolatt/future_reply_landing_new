@@ -1,16 +1,7 @@
-# future_reply_landing_new
+**Future Reply** is an AI-powered message reply tool.
 
-A new Flutter project.
+You simply **paste the message you received**, and the tool instantly generates the **best possible response** using AI.
 
-## Getting Started
+Unlike ChatGPT, it's built for **speed** — just **paste, get the reply, and post it back** to your platform.
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+It helps you respond **quickly and efficiently**, so you never miss a beat.
