@@ -326,11 +326,11 @@ class CharacterController extends GetxController {
       String characterDescription = selectedCharacter['description'] ?? '';
 
       finalPrompt =
-          "You are a ${characterTitle.toLowerCase()} character with these traits: ${characterDescription}. Write a reply tweet in this character's style and personality. ${prompt.value.isNotEmpty ? 'Additional instructions: ${prompt.value}' : ''} Write a reply tweet (sentence count is tweet's sentence count) to this tweet: ${query.value}";
+          "Reply as ${characterTitle.toLowerCase()} (${characterDescription}) in the same language as the message. ${prompt.value.isNotEmpty ? '${prompt.value} ' : ''}Message: ${query.value}";
     } else {
       // Use original prompt format
       finalPrompt =
-          "${prompt.value.isNotEmpty ? '${prompt.value}, ' : ''}Write a reply tweet, (sentence count is tweet's sentence count) to this tweet: ${query.value}";
+          "${prompt.value.isNotEmpty ? '${prompt.value} ' : ''}Reply in the same language as the message. Message: ${query.value}";
     }
 
     gemini.promptStream(parts: [Part.text(finalPrompt)]).listen((value) {
